@@ -1,0 +1,34 @@
+        FD  ORDENPAGO
+            LABEL RECORD IS STANDARD.
+        01  REG-ORDENPAGO.
+            02 ORDENPAGO-KEY.
+               03 ORDENPAGO-ID           PIC 9(06).
+            02 ORDENPAGO-PROVE           PIC 9(04).
+            02 ORDENPAGO-FECHA           PIC 9(08).
+            02 ORDENPAGO-PEND            PIC 9(01).
+            02 ORDENPAGO-PAGO            PIC 9(02)       COMP-6.
+            02 ORDENPAGO-DTO-1           PIC 9(02)V9(02) COMP-6.
+            02 ORDENPAGO-DTO-2           PIC 9(02)V9(02) COMP-6.
+            02 ORDENPAGO-DTO-3           PIC 9(02)V9(02) COMP-6.
+            02 ORDENPAGO-ANTIC           PIC X(01).
+            02 ORDENPAGO-DEPO            PIC 9(04)       COMP-6.
+            02 ORDENPAGO-OBS-1           PIC X(60).
+            02 ORDENPAGO-OBS-2           PIC X(60).
+            02 ORDENPAGO-OBS-3           PIC X(60).
+            02 ORDENPAGO-TOTAL           PIC 9(10)V9(02) COMP-6.
+            02 ORDENPAGO-IVA             PIC 9(10)V9(02) COMP-6.
+            02 ORDENPAGO-OTROS           PIC 9(10)V9(02) COMP-6.
+            02 ORDENPAGO-SI-IMPRE        PIC X(01).
+            02 ORDENPAGO-EMPRESA         PIC 9(02)       COMP-6.
+            02 ORDENPAGO-MONEDA          PIC 9(02)       COMP-6.
+            02 ORDENPAGO-COTIZ           PIC 9(04)V9(04) COMP-6.
+            02 ORDENPAGO-DOLAR           PIC 9(02)V9(04) COMP-6.
+            02 ORDENPAGO-AUTORIZA        PIC X(01).
+            02 ORDENPAGO-TABLA.
+               03 ORDENPAGO-IT OCCURS 5.
+                  04 ORDENPAGO-FEC-ENT   PIC 9(06)       COMP-6.
+            02 ORDENPAGO-PCIA-IBB        PIC 9(02).
+            02 ORDENPAGO-CONFIR          PIC X(01).
+            02 ORDENPAGO-TIPO            PIC 9(01).
+            02 ORDENPAGO-PORC            PIC 9(03)V9(02).
+            02 ORDENPAGO-RESTO           PIC X(02).

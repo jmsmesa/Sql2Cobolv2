@@ -1,0 +1,12 @@
+t     *   A01038
+        FD  ITEM-COM
+            LABEL RECORD IS STANDARD.
+        01  ITEM-COM-REG.
+            02 ITEM-COM-LLAVE.
+               03 ITEM-COM-ORDEN        PIC 9(6)      COMP-6.
+               03 ITEM-COM-PRODUCTO     PIC 9(6)      COMP-6.
+               03 ITEM-COM-TIPO         PIC 9.
+      * 1-Consumo 2-Para la venta
+               03 ITEM-COM-SECUENCIA    PIC 9(4)      COMP-6.
+            02 ITEM-COM-CAMPO           PIC X(170).
+      *   Con producto = Zeros ------->  orden de compra varias

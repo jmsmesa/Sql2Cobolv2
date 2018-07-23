@@ -1,0 +1,805 @@
+
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:46    Page 1
+Source file: s2c_Orden_Cmpr.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+     1                    identification division.
+     2                    program-id. s2cOrden-Cmpr.
+     3                    environment division.
+     4                    configuration section.
+     5                    source-computer. multiplataforma.
+     6                    object-computer. multiplataforma
+     7                        program collating sequence is upper-lower.
+     8
+     9                    special-names.
+    10                        alphabet upper-lower is
+    11                            1 thru 65,
+    12                            'A' also 'a', 'B' also 'b', 'C' also 'c', 'D' also 'd',
+    13                            'E' also 'e', 'F' also 'f', 'G' also 'g', 'H' also 'h',
+    14                            'I' also 'i', 'J' also 'j', 'K' also 'k', 'L' also 'l',
+    15                            'M' also 'm', 'N' also 'n', 'O' also 'o', 'P' also 'p',
+    16                            'Q' also 'q', 'R' also 'r', 'S' also 's', 'T' also 't',
+    17                            'U' also 'u', 'V' also 'v', 'W' also 'w', 'X' also 'x',
+    18                            'Y' also 'y', 'Z' also 'z',  92 thru 97, 124 thru 128.
+    19
+    20                    input-output section.
+    21                    file-control.
+    22                        select request
+    23                               assign to disc NombreRequest
+    24                               organization is line sequential
+    25                               access is sequential
+    26                               file status is fs-comun.
+    27
+    28                        select response
+    29                               assign to disc NombreResponse
+    30                               organization is line sequential
+    31                               access is sequential
+    32                               file status is fs-comun.
+    33
+    34          [0]           copy ord-comp.sl.
+    35          +1+            SELECT ORD-COMP
+    36          +1+              ASSIGN TO RANDOM "F-ORD-COMP"
+    37          +1+              ORGANIZATION IS INDEXED
+    38          +1+              ACCESS MODE IS DYNAMIC
+    39          +1+              RECORD KEY IS ORD-COMP-LLAVE
+    40          +1+              ALTERNATE RECORD KEY IS
+    41          +1+                  ORD-COMP-PROV-LLAVE = ORD-COMP-PROVE, ORD-COMP-ID
+    42          +1+              ALTERNATE RECORD KEY IS
+    43          +1+                  ORD-COMP-FEC-LLAVE = ORD-COMP-FECHA, ORD-COMP-ID
+    44          +1+              ALTERNATE RECORD KEY IS
+    45          +1+                  ORD-COMP-PEND-LLAVE = ORD-COMP-PEND, ORD-COMP-ID
+    46          +1+              FILE STATUS IS FS-COMUN.
+    47          [0]           copy item-com.sl.
+    48          +1+            SELECT ITEM-COM
+    49          +1+              ASSIGN TO RANDOM "F-ITEM-COM"
+    50          +1+              ORGANIZATION IS INDEXED
+    51          +1+              ACCESS MODE IS DYNAMIC
+    52          +1+              RECORD KEY IS ITEM-COM-LLAVE
+    53          +1+              FILE STATUS IS FS-COMUN.
+    54
+    55                    data division.
+    56                    file section.
+    57                    fd  request
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:46    Page 2
+Source file: s2c_Orden_Cmpr.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+    58                               block contains 1 records
+    59                               label record is standard.
+    60
+    61                    01  reg-requestOrdenesCmpr.
+    62                        03 ReqOrdenesCmpr-TipoRegistro        pic 9(01).
+    63                        03                                    pic x(01).
+    64                        03 ReqOrdenesCmpr-Ord-Comp-Id         pic 9(06).
+    65                        03                                    pic x(01).
+    66                        03 ReqOrdenesCmpr-Ord-Comp-Prove      pic 9(04).
+    67                        03                                    pic x(01).
+    68                        03 ReqOrdenesCmpr-Ord-Comp-Fecha      pic 9(08).
+    69                        03                                    pic x(01).
+    70                        03 ReqOrdenesCmpr-Ord-Comp-Pend       pic 9(01).
+    71                        03                                    pic x(01).
+    72                        03 ReqOrdenesCmpr-Ord-Comp-Pago       pic 9(02) .
+    73                        03                                    pic x(01).
+    74                        03 ReqOrdenesCmpr-Ord-Comp-Dto-1      pic 9(04),9(02).
+    75                        03                                    pic x(01).
+    76                        03 ReqOrdenesCmpr-Ord-Comp-Dto-2      pic 9(04),9(02).
+    77                        03                                    pic x(01).
+    78                        03 ReqOrdenesCmpr-Ord-Comp-Dto-3      pic 9(04),9(02).
+    79                        03                                    pic x(01).
+    80                        03 ReqOrdenesCmpr-Ord-Comp-Antic      pic x(01).
+    81                        03                                    pic x(01).
+    82                        03 ReqOrdenesCmpr-Ord-Comp-Depo       pic 9(04) .
+    83                        03                                    pic x(01).
+    84                        03 ReqOrdenesCmpr-Ord-Comp-Obs-1      pic x(60).
+    85                        03                                    pic x(01).
+    86                        03 ReqOrdenesCmpr-Ord-Comp-Obs-2      pic x(60).
+    87                        03                                    pic x(01).
+    88                        03 ReqOrdenesCmpr-Ord-Comp-Obs-3      pic x(60).
+    89                        03                                    pic x(01).
+    90                        03 ReqOrdenesCmpr-Ord-Comp-Total      pic 9(12),9(02).
+    91                        03                                    pic x(01).
+    92                        03 ReqOrdenesCmpr-Ord-Comp-Iva        pic 9(12),9(02).
+    93                        03                                    pic x(01).
+    94                        03 ReqOrdenesCmpr-Ord-Comp-Otros      pic 9(12),9(02).
+    95                        03                                    pic x(01).
+    96                        03 ReqOrdenesCmpr-Ord-Comp-Si-impre   pic x(01).
+    97                        03                                    pic x(01).
+    98                        03 ReqOrdenesCmpr-Ord-Comp-Empresa    pic 9(02).
+    99                        03                                    pic x(01).
+   100                        03 ReqOrdenesCmpr-Ord-Comp-Moneda     pic 9(02).
+   101                        03                                    pic x(01).
+   102                        03 ReqOrdenesCmpr-Ord-Comp-Cotiz      pic 9(03),9(04).
+   103                        03                                    pic x(01).
+   104                        03 ReqOrdenesCmpr-Ord-Comp-Dolar      pic 9(02),9(02).
+   105                        03                                    pic x(01).
+   106                        03 ReqOrdenesCmpr-Ord-Comp-Autoriza   pic x(01).
+   107                        03                                    pic x(01).
+   108                        03 ReqOrdenesCmpr-Ord-Comp-Fec-ent-1  pic 9(06).
+   109                        03                                    pic x(01).
+   110                        03 ReqOrdenesCmpr-Ord-Comp-Fec-ent-2  pic 9(06).
+   111                        03                                    pic x(01).
+   112                        03 ReqOrdenesCmpr-Ord-Comp-Fec-ent-3  pic 9(06).
+   113                        03                                    pic x(01).
+   114                        03 ReqOrdenesCmpr-Ord-Comp-Fec-ent-4  pic 9(06).
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:46    Page 3
+Source file: s2c_Orden_Cmpr.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+   115                        03                                    pic x(01).
+   116                        03 ReqOrdenesCmpr-Ord-Comp-Fec-ent-5  pic 9(06).
+   117                        03                                    pic x(01).
+   118                        03 ReqOrdenesCmpr-Ord-Comp-Pcia-ibb   pic 9(02).
+   119                        03                                    pic x(01).
+   120                        03 ReqOrdenesCmpr-Ord-Comp-Confir     pic x(01).
+   121                        03                                    pic x(01).
+   122                        03 ReqOrdenesCmpr-Ord-Comp-Tipo       pic 9(01).
+   123                        03                                    pic x(01).
+   124                        03 ReqOrdenesCmpr-Ord-Comp-Porc       pic 9(03),9(02).
+   125                        03                                    pic x(01).
+   126                        03 ReqOrdenesCmpr-Ord-Comp-Resto      pic x(02).
+   127
+   128                    01  reg-requestOrdenesCmprItem.
+   129                        03 ReqOrdenesCmpr-Item-TipoRegistro   pic 9(01).
+   130                        03                                    pic x(01).
+   131                        03 ReqOrdenesCmpr-Item-Com-Orden      pic 9(06).
+   132                        03                                    pic x(01).
+   133                        03 ReqOrdenesCmpr-Item-Com-Producto   pic 9(06).
+   134                        03                                    pic x(01).
+   135                        03 ReqOrdenesCmpr-Item-Com-Tipo       pic 9(01).
+   136                        03                                    pic x(01).
+   137                        03 ReqOrdenesCmpr-Item-Com-Secuencia  pic 9(04).
+   138                        03                                    pic x(01).
+   139                        03 ReqOrdenesCmpr-Item-Com-Nom-Prod   PIC X(50).
+   140                        03                                    pic x(01).
+   141                        03 ReqOrdenesCmpr-Item-Com-Cantidad-1 PIC 9(10),9(04).
+   142                        03                                    pic x(01).
+   143                        03 ReqOrdenesCmpr-Item-Com-Recibida-1 PIC 9(10),9(04).
+   144                        03                                    pic x(01).
+   145                        03 ReqOrdenesCmpr-Item-Com-Cantidad-2 PIC 9(10),9(04).
+   146                        03                                    pic x(01).
+   147                        03 ReqOrdenesCmpr-Item-Com-Recibida-2 PIC 9(10),9(04).
+   148                        03                                    pic x(01).
+   149                        03 ReqOrdenesCmpr-Item-Com-Cantidad-3 PIC 9(10),9(04).
+   150                        03                                    pic x(01).
+   151                        03 ReqOrdenesCmpr-Item-Com-Recibida-3 PIC 9(10),9(04).
+   152                        03                                    pic x(01).
+   153                        03 ReqOrdenesCmpr-Item-Com-Cantidad-4 PIC 9(10),9(04).
+   154                        03                                    pic x(01).
+   155                        03 ReqOrdenesCmpr-Item-Com-Recibida-4 PIC 9(10),9(04).
+   156                        03                                    pic x(01).
+   157                        03 ReqOrdenesCmpr-Item-Com-Cantidad-5 PIC 9(10),9(04).
+   158                        03                                    pic x(01).
+   159                        03 ReqOrdenesCmpr-Item-Com-Recibida-5 PIC 9(10),9(04).
+   160                        03                                    pic x(01).
+   161                        03 ReqOrdenesCmpr-Item-Com-Unidad     PIC X(04).
+   162                        03                                    pic x(01).
+   163                        03 ReqOrdenesCmpr-Item-Com-Precio     PIC 9(12),9(04).
+   164                        03                                    pic x(01).
+   165                        03 ReqOrdenesCmpr-Item-Com-Dto        PIC 9(10),9(04).
+   166                        03                                    pic x(01).
+   167                        03 ReqOrdenesCmpr-Item-Com-Envase     PIC 9(03).
+   168                        03                                    pic x(01).
+   169                        03 ReqOrdenesCmpr-Item-Com-Cantpre    PIC 9(10),9(04).
+   170                        03                                    pic x(01).
+   171                        03 ReqOrdenesCmpr-Item-Com-Uni-Pre    PIC X(04).
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:46    Page 4
+Source file: s2c_Orden_Cmpr.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+   172                        03                                    pic x(01).
+   173                        03 ReqOrdenesCmpr-Item-Com-Iva        PIC 9(04),9(02).
+   174                        03                                    pic x(01).
+   175                        03 ReqOrdenesCmpr-Item-Com-Sector     PIC 9(04).
+   176                        03                                    pic x(01).
+   177                        03 ReqOrdenesCmpr-Item-Com-Ord-Tra    PIC 9(06).
+   178                        03                                    pic x(01).
+   179                        03 ReqOrdenesCmpr-Item-Com-Cuenta     PIC 9(12).
+   180                        03                                    pic x(01).
+   181                        03 ReqOrdenesCmpr-Item-Com-Caract     PIC X(01).
+   182                        03                                    pic x(01).
+   183                        03 ReqOrdenesCmpr-Item-Com-Proy       PIC 9(04).
+   184                        03                                    pic x(01).
+   185                        03 ReqOrdenesCmpr-Item-Com-Obs        PIC X(30).
+   186                        03                                    pic x(01).
+   187                        03 ReqOrdenesCmpr-Item-Com-Renglon-1  PIC X(50).
+   188                        03                                    pic x(01).
+   189                        03 ReqOrdenesCmpr-Item-Com-Renglon-2  PIC X(50).
+   190                        03                                    pic x(01).
+   191                        03 ReqOrdenesCmpr-Item-Com-Res-1      PIC X(70).
+   192
+   193
+   194
+   195                    fd  response
+   196                               block contains 1 records
+   197                               label record is standard.
+   198
+   199                    01  reg-responseOrdenesCmpr.
+   200                        02 ResOrdenesCmpr-status             pic x(02).
+   201                        02 ResSep0                           pic x(01).
+   202                        02 ResOrdenesCmpr-proceso            pic x(20).
+   203                        02 ResSep1                           pic x(01).
+   204                        02 ResOrdenesCmpr-archivo            pic x(20).
+   205                        02 ResSep2                           pic x(01).
+   206                        02 ResOrdenesCmpr-operacion          pic x(20).
+   207                        02 ResSep3                           pic x(01).
+   208                        02 ResOrdenesCmpr-request            pic x(30).
+   209
+   210          [0]           copy ord-comp.fd.
+   211          +1+t     *   A01037
+   212          +1+        FD  ORD-COMP
+   213          +1+            LABEL RECORD IS STANDARD.
+   214          +1+        01  ORD-COMP-REG.
+   215          +1+            02 ORD-COMP-LLAVE.
+   216          +1+               03 ORD-COMP-ID           PIC 9(6).
+   217          +1+            02 ORD-COMP-PROVE           PIC 9(4).
+   218          +1+            02 ORD-COMP-FECHA           PIC 9(8).
+   219          +1+            02 ORD-COMP-PEND            PIC 9.
+   220          +1+      *  0 = Pendiente     1 = Cumplida su entrega    2 = Cumplida por compras
+   221          +1+            02 ORD-COMP-PAGO            PIC 9(2)      COMP-6.
+   222          +1+            02 ORD-COMP-DTO-1           PIC 99V99     COMP-6.
+   223          +1+            02 ORD-COMP-DTO-2           PIC 99V99     COMP-6.
+   224          +1+            02 ORD-COMP-DTO-3           PIC 99V99     COMP-6.
+   225          +1+            02 ORD-COMP-ANTIC           PIC X.
+   226          +1+      *  N / S
+   227          +1+      * a partir de 11/13 se usa para anticipos de bienes de Uso
+   228          +1+            02 ORD-COMP-DEPO            PIC 9(4)      COMP-6.
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:46    Page 5
+Source file: s2c_Orden_Cmpr.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+   229          +1+            02 ORD-COMP-OBS-1           PIC X(60).
+   230          +1+            02 ORD-COMP-OBS-2           PIC X(60).
+   231          +1+            02 ORD-COMP-OBS-3           PIC X(60).
+   232          +1+            02 ORD-COMP-TOTAL           PIC 9(10)V99  COMP-6.
+   233          +1+            02 ORD-COMP-IVA             PIC 9(10)V99  COMP-6.
+   234          +1+            02 ORD-COMP-OTROS           PIC 9(10)V99  COMP-6.
+   235          +1+            02 ORD-COMP-SI-IMPRE        PIC X.
+   236          +1+            02 ORD-COMP-EMPRESA         PIC 99        COMP-6.
+   237          +1+      * 1-Tuteur  2-Tuteur Organoterapicos 4-Teva & Tuteur 5-Tuteur Biologicos
+   238          +1+            02 ORD-COMP-MONEDA          PIC 99        COMP-6.
+   239          +1+            02 ORD-COMP-COTIZ           PIC 9(4)V9(4) COMP-6.
+   240          +1+            02 ORD-COMP-DOLAR           PIC 9(2)V9999 COMP-6.
+   241          +1+            02 ORD-COMP-AUTORIZA        PIC X.
+   242          +1+      * S/N (se usa cuando la recepcion supera el porc. de admision)
+   243          +1+            02 ORD-COMP-TABLA.
+   244          +1+               03 ORD-COMP-IT OCCURS 5.
+   245          +1+                  04 ORD-COMP-FEC-ENT   PIC 9(6)      COMP-6.
+   246          +1+            02 ORD-COMP-PCIA-IBB        PIC 99.
+   247          +1+            02 ORD-COMP-CONFIR          PIC X.
+   248          +1+      * S = cuando se confirma con el proveedor, no se modifica mas
+   249          +1+            02 ORD-COMP-TIPO            PIC 9.
+   250          +1+      * 1-m.p.  2-p.t.
+   251          +1+            02 ORD-COMP-PORC            PIC 999V99.
+   252          +1+            02 ORD-COMP-RESTO           PIC X(2).
+   253          [0]           copy item-com.fd.
+   254          +1+t     *   A01038
+   255          +1+        FD  ITEM-COM
+   256          +1+            LABEL RECORD IS STANDARD.
+   257          +1+        01  ITEM-COM-REG.
+   258          +1+            02 ITEM-COM-LLAVE.
+   259          +1+               03 ITEM-COM-ORDEN        PIC 9(6)      COMP-6.
+   260          +1+               03 ITEM-COM-PRODUCTO     PIC 9(6)      COMP-6.
+   261          +1+               03 ITEM-COM-TIPO         PIC 9.
+   262          +1+      * 1-Consumo 2-Para la venta
+   263          +1+               03 ITEM-COM-SECUENCIA    PIC 9(4)      COMP-6.
+   264          +1+            02 ITEM-COM-CAMPO           PIC X(170).
+   265          +1+      *   Con producto = Zeros ------->  orden de compra varias
+   266
+   267                    working-storage section.
+   268                    01  fs-comun                          pic x(02).
+   269                        88 st-ok                              value "00", "02".
+   270                        88 st-validos                         value "10", "22", "23", "00", "94", "99", "24", "34", "90", "30"
+   271                        88 eof                                value "10", "23", "94", "46".
+   272                        88 clave-invalida                     value "21".
+   273                        88 existe                             value "22".
+   274                        88 no-existe                          value "23".
+   275                        88 arch-lleno                         value "24", "34".
+   276                        88 arch-no-abierto                    value "42", "47".
+   277                        88 arch-cerrado                       value "41".
+   278                        88 arch-no-existe                     value "35".
+   279                        88 arch-sin-permisos                  value "37".
+   280                        88 error-fisico                       value "30".
+   281                        88 error-estructura                   value "98".
+   282                        88 sector-ocupado                     value "90", "99".
+   283                        88 st-return                          value "ff".
+   284
+   285                    77  Archivo                            pic x(20).
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:46    Page 6
+Source file: s2c_Orden_Cmpr.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+   286                    77  Operacion                          pic x(20).
+   287
+   288                    77  NombreRequest                      pic x(80).
+   289                    77  NombreResponse                     pic x(80).
+   290                    77  retorno                            pic 9(09) binary.
+   291                    77  st                                 pic x(02).
+   292
+   293                    01  Argumentos.
+   294                        03 arg-archivo                   pic x(080).
+   295                        03 arg-path                      pic x(256).
+   296                        03 arg-opcion                    pic x(001).
+   297
+   298          [0]           copy item-com.wk.
+   299          +1+        01  ITEM-COM-REG-1.
+   300          +1+            02 ITEM-COM-NOM-PROD        PIC X(50).
+   301          +1+            02 ITEM-COM-TABLA.
+   302          +1+               03 ITEM-COM-IT OCCURS 5.
+   303          +1+                  04 ITEM-COM-CANTIDAD  PIC 9(6)V9(4) COMP-6.
+   304          +1+                  04 ITEM-COM-RECIBIDA  PIC 9(6)V9(4) COMP-6.
+   305          +1+            02 ITEM-COM-UNIDAD          PIC X(4).
+   306          +1+            02 ITEM-COM-PRECIO          PIC 9(8)V9999 COMP-6.
+   307          +1+            02 ITEM-COM-DTO             PIC 9(6)V9999 COMP-6.
+   308          +1+            02 ITEM-COM-ENVASE          PIC 999       COMP-6.
+   309          +1+            02 ITEM-COM-CANTPRE         PIC 9(6)V9999 COMP-6.
+   310          +1+            02 ITEM-COM-UNI-PRE         PIC X(4).
+   311          +1+            02 ITEM-COM-IVA             PIC 9(2)V99   COMP-6.
+   312          +1+            02 ITEM-COM-SECTOR          PIC 9(2)      COMP-6.
+   313          +1+            02 ITEM-COM-ORD-TRA         PIC 9(6)      COMP-6.
+   314          +1+            02 ITEM-COM-CUENTA          PIC 9(12)     COMP-6.
+   315          +1+            02 ITEM-COM-CARACT          PIC X.
+   316          +1+      *   S / N
+   317          +1+            02 ITEM-COM-PROY            PIC 9(2)      COMP-6.
+   318          +1+            02 ITEM-COM-OBS             PIC X(30).
+   319          +1+        01  ITEM-COM-REG-2.
+   320          +1+            02 ITEM-COM-RENGLON-1       PIC X(50).
+   321          +1+            02 ITEM-COM-RENGLON-2       PIC X(50).
+   322          +1+            02 ITEM-COM-RES-1           PIC X(70).
+   323
+   324                    linkage section.
+   325                    01  args.
+   326                        02  argc                           pic s9(5) comp-1.
+   327                        02  argv.
+   328                            03                             pic x(01) occurs 1 to 4000
+   329                                                                     depending on argc.
+   330
+   331                    procedure division using args.
+   332                    declaratives.
+   333    000002          file-ord-comp section.
+   334                        use after standard error procedure on ord-comp.
+   335
+   336    000005          disp-ord-comp.
+   337    000008              move "ord-comp"    to archivo.
+   338    000016              perform mensaje-status.
+   339
+   340    000023          file-item-com section.
+   341                        use after standard error procedure on item-com.
+   342    000026          disp-item-com.
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:46    Page 7
+Source file: s2c_Orden_Cmpr.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+   343    000029              move "item-com"    to archivo.
+   344    000037              perform mensaje-status.
+   345
+   346    000044          file-request section.
+   347                        use after standard error procedure on request.
+   348    000047          disp-request.
+   349    000050              move "request"   to archivo.
+   350    000058              perform mensaje-status.
+   351
+   352    000065          file-response section.
+   353                        use after standard error procedure on response.
+   354    000068          disp-response.
+   355    000071              move "response"   to archivo.
+   356    000079              perform mensaje-status.
+   357
+   358    000084          mensaje-status.
+   359    000087              move fs-comun to st
+   360    000094              if st not = "00" and not = "02" and not = "10" and not = "22" and not = "23"
+   361                           open output response
+   362                           initialize reg-responseOrdenesCmpr
+   363                           move "|"                               to ResSep0 ResSep1 ResSep2 ResSep3
+   364                           move st                                to ResOrdenesCmpr-status
+   365                           move "s2c_Orden_Cmpr   "               to ResOrdenesCmpr-proceso
+   366                           move Archivo                           to ResOrdenesCmpr-archivo
+   367                           move Operacion                         to ResOrdenesCmpr-operacion
+   368                           move arg-archivo                       to ResOrdenesCmpr-request
+   369
+   370                           write reg-responseOrdenesCmpr
+   371                           close response
+   372
+   373                           goback.
+   374    000271          f-sentencias.
+   375                    end declaratives.
+   376
+   377    000278          begin section 1.
+   378
+   379    000281          IniciarProceso.
+   380    000284              if argv(1:1) = spaces
+   381                           goback
+   382                        else
+   383                           unstring argv
+   384                             delimited by "|"
+   385                                into
+   386                                   arg-archivo
+   387                                   arg-path
+   388                                   arg-opcion
+   389                           end-unstring
+   390                        end-if
+   391
+   392    000357              call "C$SetEnv" USING "RUNPATH", arg-path , retorno.
+   393
+   394    000379              string ".\interfases\" arg-archivo ".request" delimited by " " into NombreRequest
+   395    000424              string ".\interfases\" arg-archivo ".response" delimited by " " into NombreResponse
+   396
+   397    000469              perform AbrirRequest
+   398    000472              Perform AbrirOrdenesCmpr.
+   399    000475              Perform AbrirOrdenesCmprItem.
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:46    Page 8
+Source file: s2c_Orden_Cmpr.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+   400
+   401    000480          Procesarrequest.
+   402    000483              initialize ord-comp-reg item-com-reg item-com-reg-1 item-com-reg-2
+   403
+   404    000810              perform LeerRequest
+   405    000813              perform until eof
+   406                           evaluate arg-opcion
+   407                              when "a"
+   408                                 perform ProcesarAlta
+   409                              when "b"
+   410                                 perform ProcesarBaja
+   411                              when "m"
+   412                                 perform ProcesarModificacion
+   413                           end-evaluate
+   414                           perform LeerRequest
+   415                        end-perform.
+   416
+   417    000892          TerminarProceso.
+   418    000895              perform GenerarResponse
+   419
+   420    000898              perform CerrarRequest
+   421    000901              Perform CerrarOrdenesCmpr.
+   422    000904              Perform CerrarOrdenesCmprItem.
+   423
+   424    000907              goback.
+   425
+   426    000912          GenerarResponse.
+   427    000915              perform AbrirResponse
+   428
+   429    000918              initialize reg-responseOrdenesCmpr
+   430    000964              move "|"                                  to ResSep0 ResSep1 ResSep2 ResSep3
+   431    000985              move "s2c_Orden_Cmpr"                     to ResOrdenesCmpr-proceso
+   432    000993              move "00"                                 to ResOrdenesCmpr-status
+   433    001000              move spaces                               to ResOrdenesCmpr-archivo
+   434    001006              move spaces                               to ResOrdenesCmpr-operacion
+   435    001012              move arg-archivo                          to ResOrdenesCmpr-request
+   436
+   437    001019              perform GrabarResponse.
+   438
+   439    001022              perform CerrarResponse.
+   440
+   441    001027          ProcesarAlta.
+   442    001030              if ReqOrdenesCmpr-TipoRegistro = 1
+   443                           move ReqOrdenesCmpr-Ord-Comp-Id        to Ord-Comp-Id
+   444                           move ReqOrdenesCmpr-Ord-Comp-Prove     to Ord-Comp-Prove
+   445                           move ReqOrdenesCmpr-Ord-Comp-Fecha     to Ord-Comp-Fecha
+   446                           move ReqOrdenesCmpr-Ord-Comp-Pend      to Ord-Comp-Pend
+   447                           move ReqOrdenesCmpr-Ord-Comp-Pago      to Ord-Comp-Pago
+   448                           move ReqOrdenesCmpr-Ord-Comp-Dto-1     to Ord-Comp-Dto-1
+   449                           move ReqOrdenesCmpr-Ord-Comp-Dto-2     to Ord-Comp-Dto-2
+   450                           move ReqOrdenesCmpr-Ord-Comp-Dto-3     to Ord-Comp-Dto-3
+   451                           move ReqOrdenesCmpr-Ord-Comp-Antic     to Ord-Comp-Antic
+   452                           move ReqOrdenesCmpr-Ord-Comp-Depo      to Ord-Comp-Depo
+   453                           move ReqOrdenesCmpr-Ord-Comp-Obs-1     to Ord-Comp-Obs-1
+   454                           move ReqOrdenesCmpr-Ord-Comp-Obs-2     to Ord-Comp-Obs-2
+   455                           move ReqOrdenesCmpr-Ord-Comp-Obs-3     to Ord-Comp-Obs-3
+   456                           move ReqOrdenesCmpr-Ord-Comp-Total     to Ord-Comp-Total
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:46    Page 9
+Source file: s2c_Orden_Cmpr.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+   457                           move ReqOrdenesCmpr-Ord-Comp-Iva       to Ord-Comp-Iva
+   458                           move ReqOrdenesCmpr-Ord-Comp-Otros     to Ord-Comp-Otros
+   459                           move ReqOrdenesCmpr-Ord-Comp-Si-impre  to Ord-Comp-Si-impre
+   460                           move ReqOrdenesCmpr-Ord-Comp-Empresa   to Ord-Comp-Empresa
+   461                           move ReqOrdenesCmpr-Ord-Comp-Moneda    to Ord-Comp-Moneda
+   462                           move ReqOrdenesCmpr-Ord-Comp-Cotiz     to Ord-Comp-Cotiz
+   463                           move ReqOrdenesCmpr-Ord-Comp-Dolar     to Ord-Comp-Dolar
+   464                           move ReqOrdenesCmpr-Ord-Comp-Autoriza  to Ord-Comp-Autoriza
+   465                           move ReqOrdenesCmpr-Ord-Comp-Fec-ent-1 to Ord-Comp-Fec-ent(01)
+   466                           move ReqOrdenesCmpr-Ord-Comp-Fec-ent-2 to Ord-Comp-Fec-ent(02)
+   467                           move ReqOrdenesCmpr-Ord-Comp-Fec-ent-3 to Ord-Comp-Fec-ent(03)
+   468                           move ReqOrdenesCmpr-Ord-Comp-Fec-ent-4 to Ord-Comp-Fec-ent(04)
+   469                           move ReqOrdenesCmpr-Ord-Comp-Fec-ent-5 to Ord-Comp-Fec-ent(05)
+   470                           move ReqOrdenesCmpr-Ord-Comp-Pcia-ibb  to Ord-Comp-Pcia-ibb
+   471                           move ReqOrdenesCmpr-Ord-Comp-Confir    to Ord-Comp-Confir
+   472                           move ReqOrdenesCmpr-Ord-Comp-Tipo      to Ord-Comp-Tipo
+   473                           move ReqOrdenesCmpr-Ord-Comp-Porc      to Ord-Comp-Porc
+   474                           move ReqOrdenesCmpr-Ord-Comp-Resto     to Ord-Comp-Resto
+   475
+   476                           perform GrabarOrdenesCmpr
+   477                           if fs-comun = "22"
+   478                              perform ReGrabarOrdenesCmpr
+   479                           end-if
+   480                        else
+   481                           move ReqOrdenesCmpr-Item-Com-Orden     to Item-Com-Orden
+   482                           move ReqOrdenesCmpr-Item-Com-Producto  to Item-Com-Producto
+   483                           move ReqOrdenesCmpr-Item-Com-Tipo      to Item-Com-Tipo
+   484                           move ReqOrdenesCmpr-Item-Com-Secuencia to Item-Com-Secuencia
+   485
+   486                           move ReqOrdenesCmpr-Item-Com-Nom-Prod   to Item-Com-Nom-Prod
+   487                           move ReqOrdenesCmpr-Item-Com-Cantidad-1 to Item-Com-Cantidad(1)
+   488                           move ReqOrdenesCmpr-Item-Com-Recibida-1 to Item-Com-Recibida(1)
+   489                           move ReqOrdenesCmpr-Item-Com-Cantidad-2 to Item-Com-Cantidad(2)
+   490                           move ReqOrdenesCmpr-Item-Com-Recibida-2 to Item-Com-Recibida(2)
+   491                           move ReqOrdenesCmpr-Item-Com-Cantidad-3 to Item-Com-Cantidad(3)
+   492                           move ReqOrdenesCmpr-Item-Com-Recibida-3 to Item-Com-Recibida(3)
+   493                           move ReqOrdenesCmpr-Item-Com-Cantidad-4 to Item-Com-Cantidad(4)
+   494                           move ReqOrdenesCmpr-Item-Com-Recibida-4 to Item-Com-Recibida(4)
+   495                           move ReqOrdenesCmpr-Item-Com-Cantidad-5 to Item-Com-Cantidad(5)
+   496                           move ReqOrdenesCmpr-Item-Com-Recibida-5 to Item-Com-Recibida(5)
+   497                           move ReqOrdenesCmpr-Item-Com-Unidad     to Item-Com-Unidad
+   498                           move ReqOrdenesCmpr-Item-Com-Precio     to Item-Com-Precio
+   499                           move ReqOrdenesCmpr-Item-Com-Dto        to Item-Com-Dto
+   500                           move ReqOrdenesCmpr-Item-Com-Envase     to Item-Com-Envase
+   501                           move ReqOrdenesCmpr-Item-Com-Cantpre    to Item-Com-Cantpre
+   502                           move ReqOrdenesCmpr-Item-Com-Uni-Pre    to Item-Com-Uni-Pre
+   503                           move ReqOrdenesCmpr-Item-Com-Iva        to Item-Com-Iva
+   504                           move ReqOrdenesCmpr-Item-Com-Sector     to Item-Com-Sector
+   505                           move ReqOrdenesCmpr-Item-Com-Ord-Tra    to Item-Com-Ord-Tra
+   506                           move ReqOrdenesCmpr-Item-Com-Cuenta     to Item-Com-Cuenta
+   507                           move ReqOrdenesCmpr-Item-Com-Caract     to Item-Com-Caract
+   508                           move ReqOrdenesCmpr-Item-Com-Proy       to Item-Com-Proy
+   509                           move ReqOrdenesCmpr-Item-Com-Obs        to Item-Com-Obs
+   510                           move ReqOrdenesCmpr-Item-Com-Renglon-1  to Item-Com-Renglon-1
+   511                           move ReqOrdenesCmpr-Item-Com-Renglon-2  to Item-Com-Renglon-2
+   512                           move ReqOrdenesCmpr-Item-Com-Res-1      to Item-Com-Res-1
+   513
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:46    Page 10
+Source file: s2c_Orden_Cmpr.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+   514                           if Item-Com-Producto > 0
+   515                              move item-com-reg-1                  to item-com-campo
+   516                           else
+   517                              move item-com-reg-2                  to item-com-campo
+   518                           end-if
+   519
+   520                           perform GrabarOrdenesCmprItem
+   521                           if fs-comun = "22"
+   522                              perform ReGrabarOrdenesCmprItem
+   523                           end-if.
+   524
+   525    001517          ProcesarBaja.
+   526    001520              if ReqOrdenesCmpr-TipoRegistro = 1
+   527                           move ReqOrdenesCmpr-Ord-Comp-Id        to Ord-Comp-Id
+   528
+   529                           perform BorrarOrdenesCmpr
+   530                        else
+   531                           move ReqOrdenesCmpr-Item-Com-Orden     to Item-Com-Orden
+   532                           move ReqOrdenesCmpr-Item-Com-Producto  to Item-Com-Producto
+   533                           move ReqOrdenesCmpr-Item-Com-Tipo      to Item-Com-Tipo
+   534                           move ReqOrdenesCmpr-Item-Com-Secuencia to Item-Com-Secuencia
+   535
+   536                           perform BorrarOrdenesCmprItem.
+   537
+   538    001570          ProcesarModificacion.
+   539    001573              if ReqOrdenesCmpr-TipoRegistro = 1
+   540                           move ReqOrdenesCmpr-Ord-Comp-Id        to Ord-Comp-Id
+   541                           move ReqOrdenesCmpr-Ord-Comp-Prove     to Ord-Comp-Prove
+   542                           move ReqOrdenesCmpr-Ord-Comp-Fecha     to Ord-Comp-Fecha
+   543                           move ReqOrdenesCmpr-Ord-Comp-Pend      to Ord-Comp-Pend
+   544                           move ReqOrdenesCmpr-Ord-Comp-Pago      to Ord-Comp-Pago
+   545                           move ReqOrdenesCmpr-Ord-Comp-Dto-1     to Ord-Comp-Dto-1
+   546                           move ReqOrdenesCmpr-Ord-Comp-Dto-2     to Ord-Comp-Dto-2
+   547                           move ReqOrdenesCmpr-Ord-Comp-Dto-3     to Ord-Comp-Dto-3
+   548                           move ReqOrdenesCmpr-Ord-Comp-Antic     to Ord-Comp-Antic
+   549                           move ReqOrdenesCmpr-Ord-Comp-Depo      to Ord-Comp-Depo
+   550                           move ReqOrdenesCmpr-Ord-Comp-Obs-1     to Ord-Comp-Obs-1
+   551                           move ReqOrdenesCmpr-Ord-Comp-Obs-2     to Ord-Comp-Obs-2
+   552                           move ReqOrdenesCmpr-Ord-Comp-Obs-3     to Ord-Comp-Obs-3
+   553                           move ReqOrdenesCmpr-Ord-Comp-Total     to Ord-Comp-Total
+   554                           move ReqOrdenesCmpr-Ord-Comp-Iva       to Ord-Comp-Iva
+   555                           move ReqOrdenesCmpr-Ord-Comp-Otros     to Ord-Comp-Otros
+   556                           move ReqOrdenesCmpr-Ord-Comp-Si-impre  to Ord-Comp-Si-impre
+   557                           move ReqOrdenesCmpr-Ord-Comp-Empresa   to Ord-Comp-Empresa
+   558                           move ReqOrdenesCmpr-Ord-Comp-Moneda    to Ord-Comp-Moneda
+   559                           move ReqOrdenesCmpr-Ord-Comp-Cotiz     to Ord-Comp-Cotiz
+   560                           move ReqOrdenesCmpr-Ord-Comp-Dolar     to Ord-Comp-Dolar
+   561                           move ReqOrdenesCmpr-Ord-Comp-Autoriza  to Ord-Comp-Autoriza
+   562                           move ReqOrdenesCmpr-Ord-Comp-Fec-ent-1 to Ord-Comp-Fec-ent(01)
+   563                           move ReqOrdenesCmpr-Ord-Comp-Fec-ent-2 to Ord-Comp-Fec-ent(02)
+   564                           move ReqOrdenesCmpr-Ord-Comp-Fec-ent-3 to Ord-Comp-Fec-ent(03)
+   565                           move ReqOrdenesCmpr-Ord-Comp-Fec-ent-4 to Ord-Comp-Fec-ent(04)
+   566                           move ReqOrdenesCmpr-Ord-Comp-Fec-ent-5 to Ord-Comp-Fec-ent(05)
+   567                           move ReqOrdenesCmpr-Ord-Comp-Pcia-ibb  to Ord-Comp-Pcia-ibb
+   568                           move ReqOrdenesCmpr-Ord-Comp-Confir    to Ord-Comp-Confir
+   569                           move ReqOrdenesCmpr-Ord-Comp-Tipo      to Ord-Comp-Tipo
+   570                           move ReqOrdenesCmpr-Ord-Comp-Porc      to Ord-Comp-Porc
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:46    Page 11
+Source file: s2c_Orden_Cmpr.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+   571                           move ReqOrdenesCmpr-Ord-Comp-Resto     to Ord-Comp-Resto
+   572                           perform ReGrabarOrdenesCmpr
+   573                        else
+   574                           move ReqOrdenesCmpr-Item-Com-Orden     to Item-Com-Orden
+   575                           move ReqOrdenesCmpr-Item-Com-Producto  to Item-Com-Producto
+   576                           move ReqOrdenesCmpr-Item-Com-Tipo      to Item-Com-Tipo
+   577                           move ReqOrdenesCmpr-Item-Com-Secuencia to Item-Com-Secuencia
+   578
+   579                           move ReqOrdenesCmpr-Item-Com-Nom-Prod   to Item-Com-Nom-Prod
+   580                           move ReqOrdenesCmpr-Item-Com-Cantidad-1 to Item-Com-Cantidad(1)
+   581                           move ReqOrdenesCmpr-Item-Com-Recibida-1 to Item-Com-Recibida(1)
+   582                           move ReqOrdenesCmpr-Item-Com-Cantidad-2 to Item-Com-Cantidad(2)
+   583                           move ReqOrdenesCmpr-Item-Com-Recibida-2 to Item-Com-Recibida(2)
+   584                           move ReqOrdenesCmpr-Item-Com-Cantidad-3 to Item-Com-Cantidad(3)
+   585                           move ReqOrdenesCmpr-Item-Com-Recibida-3 to Item-Com-Recibida(3)
+   586                           move ReqOrdenesCmpr-Item-Com-Cantidad-4 to Item-Com-Cantidad(4)
+   587                           move ReqOrdenesCmpr-Item-Com-Recibida-4 to Item-Com-Recibida(4)
+   588                           move ReqOrdenesCmpr-Item-Com-Cantidad-5 to Item-Com-Cantidad(5)
+   589                           move ReqOrdenesCmpr-Item-Com-Recibida-5 to Item-Com-Recibida(5)
+   590                           move ReqOrdenesCmpr-Item-Com-Unidad     to Item-Com-Unidad
+   591                           move ReqOrdenesCmpr-Item-Com-Precio     to Item-Com-Precio
+   592                           move ReqOrdenesCmpr-Item-Com-Dto        to Item-Com-Dto
+   593                           move ReqOrdenesCmpr-Item-Com-Envase     to Item-Com-Envase
+   594                           move ReqOrdenesCmpr-Item-Com-Cantpre    to Item-Com-Cantpre
+   595                           move ReqOrdenesCmpr-Item-Com-Uni-Pre    to Item-Com-Uni-Pre
+   596                           move ReqOrdenesCmpr-Item-Com-Iva        to Item-Com-Iva
+   597                           move ReqOrdenesCmpr-Item-Com-Sector     to Item-Com-Sector
+   598                           move ReqOrdenesCmpr-Item-Com-Ord-Tra    to Item-Com-Ord-Tra
+   599                           move ReqOrdenesCmpr-Item-Com-Cuenta     to Item-Com-Cuenta
+   600                           move ReqOrdenesCmpr-Item-Com-Caract     to Item-Com-Caract
+   601                           move ReqOrdenesCmpr-Item-Com-Proy       to Item-Com-Proy
+   602                           move ReqOrdenesCmpr-Item-Com-Obs        to Item-Com-Obs
+   603                           move ReqOrdenesCmpr-Item-Com-Renglon-1  to Item-Com-Renglon-1
+   604                           move ReqOrdenesCmpr-Item-Com-Renglon-2  to Item-Com-Renglon-2
+   605                           move ReqOrdenesCmpr-Item-Com-Res-1      to Item-Com-Res-1
+   606
+   607                           if Item-Com-Producto > 0
+   608                              move item-com-reg-1                  to item-com-campo
+   609                           else
+   610                              move item-com-reg-2                  to item-com-campo
+   611                           end-if
+   612
+   613                           perform ReGrabarOrdenesCmprItem.
+   614
+   615
+   616                   * ---------------------------------------------------
+   617    002038          AbrirRequest.
+   618    002041              move "open      " to operacion
+   619    002049              open input request.
+   620
+   621    002058          LeerRequest.
+   622    002061              move "read      " to operacion
+   623    002069              read request.
+   624
+   625    002082          CerrarRequest.
+   626    002085              move "close     " to operacion
+   627    002093              close request.
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:46    Page 12
+Source file: s2c_Orden_Cmpr.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+   628
+   629                   * ---------------------------------------------------
+   630    002102          AbrirResponse.
+   631    002105              move "open      " to operacion
+   632    002113              open output response.
+   633
+   634    002122          GrabarResponse.
+   635    002125              move "write     " to operacion
+   636    002133              write reg-responseOrdenesCmpr.
+   637
+   638    002142          CerrarResponse.
+   639    002145              move "close     " to operacion
+   640    002153              close response.
+   641
+   642                   * ---------------------------------------------------
+   643    002162          AbrirOrdenesCmpr.
+   644    002165              move "open      " to operacion
+   645    002173              open i-o ord-comp.
+   646
+   647    002182          LeerOrdenesCmpr.
+   648    002185              move "read      " to operacion
+   649    002193              read ord-comp.
+   650
+   651    002208          RegrabarOrdenesCmpr.
+   652    002211              move "rewrite   " to operacion
+   653    002219              rewrite ord-comp-reg.
+   654
+   655    002232          BorrarOrdenesCmpr.
+   656    002235              move "delete    " to operacion
+   657    002243              delete ord-comp.
+   658
+   659    002256          GrabarOrdenesCmpr.
+   660    002259              move "write     " to operacion
+   661    002267              write ord-comp-reg.
+   662
+   663    002280          CerrarOrdenesCmpr.
+   664    002283              move "close     " to operacion
+   665    002291              Close ord-comp.
+   666
+   667                   * ---------------------------------------------------
+   668    002300          AbrirOrdenesCmprItem.
+   669    002303              move "open      " to operacion
+   670    002311              open i-o item-com.
+   671
+   672    002320          LeerOrdenesCmprItem.
+   673    002323              move "read      " to operacion
+   674    002331              read item-com.
+   675
+   676    002346          RegrabarOrdenesCmprItem.
+   677    002349              move "rewrite   " to operacion
+   678    002357              rewrite item-com-reg.
+   679
+   680    002370          BorrarOrdenesCmprItem.
+   681    002373              move "delete    " to operacion
+   682    002381              delete item-com.
+   683
+   684    002394          GrabarOrdenesCmprItem.
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:46    Page 13
+Source file: s2c_Orden_Cmpr.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+   685    002397              move "write     " to operacion
+   686    002405              write item-com-reg.
+   687
+   688    002418          CerrarOrdenesCmprItem.
+   689    002421              move "close     " to operacion
+   690    002429              Close item-com.
+
+
+
+Called Program Summary
+
+Program-name required          Using count
+
+  "C$SetEnv"                         3
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:46    Page 14
+Source file: s2c_Orden_Cmpr.cbl  Options: G=compiler.cfg Y=3 L
+
+Program Summary Statistics                                                                            S2CORDEN-CMPR
+
+
+Read only size:                    4184 (X"00001058") bytes
+Read/write size:                   2998 (X"00000BB6") bytes
+Overlayable segment size:             0 (X"00000000") bytes
+
+Total generated object size:       7182 (X"00001C0E") bytes
+
+Source program used 242 (0%) of 65534 available identifiers (T1C limit).
+Source program used 975 (0%) of 588800 available user-defined word space (T2B limit).
+
+Maximum compilation memory used was 236K bytes (0 presses and 0 increases required).
+
+
+
+Source indicators (columns 17-19 of source listing):
+   +n+  Source was copied from copy file at copy nesting level n (level 0 indicator is suppressed).
+   [n]  Source is a COPY statement, which is logically replaced by copied library text.
+
+
+
+Errors: 0, Warnings: 0, Lines: 690 for program S2CORDEN-CMPR.
+
+
+
+Object version level: 9
+
+Options in effect:
+    C - C=2 Suppress replaced lines in listing (default)
+    G - G configuration file (overriding configuration) "compiler.cfg"
+    L - Listing file "N:\CMA\COBOL\CSHARP\Sql2Cobolv2\RMCobol\s2c_Orden_Cmpr.lst"
+    Y - Y=3 CodeWatch debugging enabled with extended information
+    Z - Z object version restriction = 13
+    INITIAL-MARGIN-R = 512 configured
+    SOURCE-RECORD-MAX-LENGTH = 1024 configured
+    SOURCE-ON-INPUT-DEVICE = YES configured (affects trailing spaces in source records)
+

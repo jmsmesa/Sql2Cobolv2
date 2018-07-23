@@ -1,0 +1,385 @@
+
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:53    Page 1
+Source file: s2c_honorarios.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+     1                    identification division.
+     2                    program-id. s2cHonorarios.
+     3                    author.     sm.
+     4                    environment division.
+     5                    configuration section.
+     6                    source-computer. multiplataforma.
+     7                    object-computer. multiplataforma
+     8                        program collating sequence is upper-lower.
+     9
+    10                    special-names.
+    11                        alphabet upper-lower is
+    12                            1 thru 65,
+    13                            'A' also 'a', 'B' also 'b', 'C' also 'c', 'D' also 'd',
+    14                            'E' also 'e', 'F' also 'f', 'G' also 'g', 'H' also 'h',
+    15                            'I' also 'i', 'J' also 'j', 'K' also 'k', 'L' also 'l',
+    16                            'M' also 'm', 'N' also 'n', 'O' also 'o', 'P' also 'p',
+    17                            'Q' also 'q', 'R' also 'r', 'S' also 's', 'T' also 't',
+    18                            'U' also 'u', 'V' also 'v', 'W' also 'w', 'X' also 'x',
+    19                            'Y' also 'y', 'Z' also 'z',  92 thru 97, 124 thru 128.
+    20
+    21                    input-output section.
+    22                    file-control.
+    23                        select request
+    24                               assign to disc NombreRequest
+    25                               organization is line sequential
+    26                               access is sequential
+    27                               file status is fs-comun.
+    28
+    29                        select response
+    30                               assign to disc NombreResponse
+    31                               organization is line sequential
+    32                               access is sequential
+    33                               file status is fs-comun.
+    34
+    35          [0]           copy honora.sl.
+    36          +1+            SELECT HONORA
+    37          +1+              ASSIGN TO RANDOM "F-HONORA"
+    38          +1+              ORGANIZATION IS INDEXED
+    39          +1+              ACCESS MODE IS DYNAMIC
+    40          +1+              RECORD KEY IS HONORA-LLAVE
+    41          +1+              ALTERNATE RECORD KEY IS HONORA-ALT-LLAVE =
+    42          +1+                        HONORA-FECHA, HONORA-ID
+    43          +1+              ALTERNATE RECORD KEY IS HONORA-ALT-APM   =
+    44          +1+                        HONORA-APM, HONORA-ID
+    45          +1+              FILE STATUS IS FS-COMUN.
+    46
+    47                    data division.
+    48                    file section.
+    49                    fd  request
+    50                               block contains 1 records
+    51                               label record is standard.
+    52
+    53                    01  reg-requestHonorarios.
+    54                        02 ReqHonorarios-id              pic 9(06).
+    55                        02                               pic x(01).
+    56                        02 ReqHonorarios-apm             pic 9(02).
+    57                        02                               pic x(01).
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:53    Page 2
+Source file: s2c_honorarios.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+    58                        02 ReqHonorarios-fecha           pic 9(06).
+    59                        02                               pic x(01).
+    60                        02 ReqHonorarios-autor           pic 9(02).
+    61                        02                               pic x(01).
+    62                        02 ReqHonorarios-impue           pic 9(01).
+    63                        02                               pic x(01).
+    64                        02 ReqHonorarios-nodona          pic 9(01).
+    65
+    66                    fd  response
+    67                               block contains 1 records
+    68                               label record is standard.
+    69
+    70                    01  reg-responseHonorarios.
+    71                        02 ResHonorarios-status          pic x(02).
+    72                        02 ResSep0                       pic x(01).
+    73                        02 ResHonorarios-proceso         pic x(20).
+    74                        02 ResSep1                       pic x(01).
+    75                        02 ResHonorarios-archivo         pic x(20).
+    76                        02 ResSep2                       pic x(01).
+    77                        02 ResHonorarios-operacion       pic x(20).
+    78                        02 ResSep3                       pic x(01).
+    79                        02 ResHonorarios-request         pic x(30).
+    80
+    81          [0]           copy honora.fd.
+    82          +1+        FD  HONORA
+    83          +1+            LABEL RECORD IS STANDARD.
+    84          +1+        01  HONORA-REG.
+    85          +1+            02 HONORA-LLAVE.
+    86          +1+               03 HONORA-ID           PIC 9(6).
+    87          +1+            02 HONORA-APM             PIC 99.
+    88          +1+            02 HONORA-FECHA           PIC 9(6).
+    89          +1+            02 HONORA-AUTOR           PIC 9.
+    90          +1+      * 0=Sin autorizar 1-Autorizada
+    91          +1+            02 HONORA-IMPUE           PIC 9.
+    92          +1+      * 0=Sin autorizar 1-Autorizada 2-Rechazada
+    93          +1+            02 HONORA-NODONA          PIC 9.
+    94          +1+      * 0-Donacion ok 1-Donacion no computable
+    95          +1+            02 HONORA-RESTO           PIC X(37).
+    96
+    97                    working-storage section.
+    98                    01  fs-comun                         pic x(02).
+    99                        88 st-ok                             value "00", "02".
+   100                        88 st-validos                        value "10", "22", "23", "00", "94", "99", "24", "34", "90", "30",
+   101                        88 eof                               value "10", "23", "94", "46".
+   102                        88 clave-invalida                    value "21".
+   103                        88 existe                            value "22".
+   104                        88 no-existe                         value "23".
+   105                        88 arch-lleno                        value "24", "34".
+   106                        88 arch-no-abierto                   value "42", "47".
+   107                        88 arch-cerrado                      value "41".
+   108                        88 arch-no-existe                    value "35".
+   109                        88 arch-sin-permisos                 value "37".
+   110                        88 error-fisico                      value "30".
+   111                        88 error-estructura                  value "98".
+   112                        88 sector-ocupado                    value "90", "99".
+   113                        88 st-return                         value "ff".
+   114
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:53    Page 3
+Source file: s2c_honorarios.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+   115                    77  Archivo                          pic x(20).
+   116                    77  Operacion                        pic x(20).
+   117
+   118                    77  NombreRequest                      pic x(80).
+   119                    77  NombreResponse                     pic x(80).
+   120                    77  retorno                            pic 9(09) binary.
+   121                    77  st                                 pic x(02).
+   122
+   123                    01  Argumentos.
+   124                        03 arg-archivo                   pic x(080).
+   125                        03 arg-path                      pic x(256).
+   126                        03 arg-opcion                    pic x(001).
+   127
+   128                    linkage section.
+   129                    01  args.
+   130                        02  argc                         pic s9(5) comp-1.
+   131                        02  argv.
+   132                            03                           pic x(01) occurs 1 to 4000
+   133                                                               depending on argc.
+   134
+   135                    procedure division using args.
+   136                    declaratives.
+   137    000002          file-honora section.
+   138                        use after standard error procedure on honora.
+   139    000005          disp-honora.
+   140    000008              move "honora"      to archivo.
+   141    000016              perform mensaje-status.
+   142
+   143    000023          file-request section.
+   144                        use after standard error procedure on request.
+   145    000026          disp-request.
+   146    000029              move "request"   to archivo.
+   147    000037              perform mensaje-status.
+   148
+   149    000044          file-response section.
+   150                        use after standard error procedure on response.
+   151    000047          disp-response.
+   152    000050              move "response"   to archivo.
+   153    000058              perform mensaje-status.
+   154
+   155    000063          mensaje-status.
+   156    000066              move fs-comun to st
+   157    000073              if st not = "00" and not = "02" and not = "10" and not = "22" and not = "23"
+   158                           open output response
+   159                           initialize reg-responseHonorarios
+   160                           move "|"              to ResSep0 ResSep1 ResSep2 ResSep3
+   161                           move st               to ResHonorarios-status
+   162                           move "s2c_honorarios" to ResHonorarios-proceso
+   163                           move Archivo          to ResHonorarios-archivo
+   164                           move Operacion        to ResHonorarios-operacion
+   165                           move argv(1:26)       to ResHonorarios-request
+   166
+   167                           write reg-responseHonorarios
+   168                           close response
+   169
+   170                           goback.
+   171    000257          f-sentencias.
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:53    Page 4
+Source file: s2c_honorarios.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+   172                    end declaratives.
+   173
+   174    000264          begin section 1.
+   175
+   176    000267          IniciarProceso.
+   177    000270              if argv(1:1) = spaces
+   178                           goback
+   179                        else
+   180                           unstring argv
+   181                             delimited by "|"
+   182                                into
+   183                                   arg-archivo
+   184                                   arg-path
+   185                                   arg-opcion
+   186                           end-unstring
+   187                        end-if
+   188
+   189    000343              call "C$SetEnv" USING "RUNPATH", arg-path , retorno.
+   190
+   191    000365              string ".\interfases\" arg-archivo ".request" delimited by " " into NombreRequest
+   192    000410              string ".\interfases\" arg-archivo ".response" delimited by " " into NombreResponse
+   193
+   194                   *     display "[" argv(1:26) "]"
+   195                   *     display "[" NombreRequest "]"
+   196                   *     display "[" NombreResponse "]"
+   197                   *      accept st
+   198
+   199    000455              perform AbrirRequest
+   200    000459              Perform AbrirHonorarios.
+   201
+   202    000464          Procesarrequest.
+   203    000467              perform LeerRequest
+   204    000470              perform until eof
+   205                           evaluate arg-opcion
+   206                              when "a"
+   207                                 perform ProcesarAlta
+   208                              when "b"
+   209                                 perform ProcesarBaja
+   210                              when "m"
+   211                                 perform ProcesarModificacion
+   212                           end-evaluate
+   213                           perform LeerRequest
+   214                        end-perform.
+   215
+   216    000549          TerminarProceso.
+   217    000552              perform GenerarResponse
+   218
+   219    000555              perform CerrarRequest
+   220    000558              Perform CerrarHonorarios.
+   221
+   222    000561              goback.
+   223
+   224    000566          GenerarResponse.
+   225    000569              perform AbrirResponse
+   226
+   227    000572              initialize reg-responseHonorarios
+   228    000618              move "|"              to ResSep0 ResSep1 ResSep2 ResSep3
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:53    Page 5
+Source file: s2c_honorarios.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+   229    000639              move "s2c_honorarios" to ResHonorarios-proceso
+   230    000647              move "00"             to ResHonorarios-status
+   231    000654              move spaces           to ResHonorarios-archivo
+   232    000660              move spaces           to ResHonorarios-operacion
+   233    000666              move arg-archivo      to ResHonorarios-request
+   234
+   235    000673              perform GrabarResponse.
+   236
+   237    000676              perform CerrarResponse.
+   238
+   239    000681          ProcesarAlta.
+   240    000684              move Reqhonorarios-id       to honora-id
+   241    000691              move Reqhonorarios-apm      to honora-apm
+   242    000698              move Reqhonorarios-fecha    to honora-fecha
+   243    000705              move Reqhonorarios-autor    to honora-autor
+   244    000710              move Reqhonorarios-impue    to honora-impue
+   245    000717              move Reqhonorarios-nodona   to honora-nodona
+   246    000724              move spaces                 to honora-resto
+   247
+   248    000730              perform GrabarHonorarios
+   249    000733              if fs-comun = "22"
+   250                           perform ReGrabarHonorarios.
+   251    000747          ProcesarBaja.
+   252
+   253    000752          ProcesarModificacion.
+   254
+   255                   * ---------------------------------------------------
+   256    000757          AbrirRequest.
+   257    000760              move "open      " to operacion
+   258    000768              open input request.
+   259
+   260    000777          LeerRequest.
+   261    000780              move "read      " to operacion
+   262    000788              read request.
+   263
+   264    000801          CerrarRequest.
+   265    000804              move "close     " to operacion
+   266    000812              close request.
+   267
+   268                   * ---------------------------------------------------
+   269    000821          AbrirResponse.
+   270    000824              move "open      " to operacion
+   271    000832              open output response.
+   272
+   273    000841          GrabarResponse.
+   274    000844              move "write     " to operacion
+   275    000852              write reg-responseHonorarios.
+   276
+   277    000861          CerrarResponse.
+   278    000864              move "close     " to operacion
+   279    000872              close response.
+   280
+   281                   * ---------------------------------------------------
+   282    000881          AbrirHonorarios.
+   283    000884              move "open      " to operacion
+   284    000892              open i-o honora.
+   285
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:53    Page 6
+Source file: s2c_honorarios.cbl  Options: G=compiler.cfg Y=3 L
+
+  LINE   DEBUG     PG/LN -A 1 B..+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0....+....1...
+
+   286    000901          Leerhonorarios.
+   287    000904              move "read      " to operacion
+   288    000912              read honora.
+   289
+   290    000927          Regrabarhonorarios.
+   291    000930              move "rewrite   " to operacion
+   292    000938              rewrite honora-reg.
+   293
+   294    000951          BorrarHonorarios.
+   295    000954              move "delete    " to operacion
+   296    000962              delete honora.
+   297
+   298    000975          GrabarHonorarios.
+   299    000978              move "write     " to operacion
+   300    000986              write honora-reg.
+   301
+   302    000999          CerrarHonorarios.
+   303    001002              move "close     " to operacion
+   304    001010              Close honora.
+   305
+
+
+
+Called Program Summary
+
+Program-name required          Using count
+
+  "C$SetEnv"                         3
+RM/COBOL (Version 11.01) for 32-Bit Windows                      05/21/2018  12:31:53    Page 7
+Source file: s2c_honorarios.cbl  Options: G=compiler.cfg Y=3 L
+
+Program Summary Statistics                                                                            S2CHONORARIOS
+
+
+Read only size:                    2052 (X"00000804") bytes
+Read/write size:                   1516 (X"000005EC") bytes
+Overlayable segment size:             0 (X"00000000") bytes
+
+Total generated object size:       3568 (X"00000DF0") bytes
+
+Source program used 67 (0%) of 65534 available identifiers (T1C limit).
+Source program used 317 (0%) of 588800 available user-defined word space (T2B limit).
+
+Maximum compilation memory used was 216K bytes (0 presses and 0 increases required).
+
+
+
+Source indicators (columns 17-19 of source listing):
+   +n+  Source was copied from copy file at copy nesting level n (level 0 indicator is suppressed).
+   [n]  Source is a COPY statement, which is logically replaced by copied library text.
+
+
+
+Errors: 0, Warnings: 0, Lines: 305 for program S2CHONORARIOS.
+
+
+
+Object version level: 9
+
+Options in effect:
+    C - C=2 Suppress replaced lines in listing (default)
+    G - G configuration file (overriding configuration) "compiler.cfg"
+    L - Listing file "N:\CMA\COBOL\CSHARP\Sql2Cobolv2\RMCobol\s2c_honorarios.lst"
+    Y - Y=3 CodeWatch debugging enabled with extended information
+    Z - Z object version restriction = 13
+    INITIAL-MARGIN-R = 512 configured
+    SOURCE-RECORD-MAX-LENGTH = 1024 configured
+    SOURCE-ON-INPUT-DEVICE = YES configured (affects trailing spaces in source records)
+

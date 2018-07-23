@@ -1,0 +1,10 @@
+            SELECT HONORA
+              ASSIGN TO RANDOM "F-HONORA"
+              ORGANIZATION IS INDEXED
+              ACCESS MODE IS DYNAMIC
+              RECORD KEY IS HONORA-LLAVE
+              ALTERNATE RECORD KEY IS HONORA-ALT-LLAVE =
+                        HONORA-FECHA, HONORA-ID
+              ALTERNATE RECORD KEY IS HONORA-ALT-APM   =
+                        HONORA-APM, HONORA-ID
+              FILE STATUS IS FS-COMUN.

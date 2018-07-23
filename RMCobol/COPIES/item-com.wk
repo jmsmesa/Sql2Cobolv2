@@ -1,0 +1,24 @@
+        01  ITEM-COM-REG-1.
+            02 ITEM-COM-NOM-PROD        PIC X(50).
+            02 ITEM-COM-TABLA.
+               03 ITEM-COM-IT OCCURS 5.
+                  04 ITEM-COM-CANTIDAD  PIC 9(6)V9(4) COMP-6.
+                  04 ITEM-COM-RECIBIDA  PIC 9(6)V9(4) COMP-6.
+            02 ITEM-COM-UNIDAD          PIC X(4).
+            02 ITEM-COM-PRECIO          PIC 9(8)V9999 COMP-6.
+            02 ITEM-COM-DTO             PIC 9(6)V9999 COMP-6.
+            02 ITEM-COM-ENVASE          PIC 999       COMP-6.
+            02 ITEM-COM-CANTPRE         PIC 9(6)V9999 COMP-6.
+            02 ITEM-COM-UNI-PRE         PIC X(4).
+            02 ITEM-COM-IVA             PIC 9(2)V99   COMP-6.
+            02 ITEM-COM-SECTOR          PIC 9(2)      COMP-6.
+            02 ITEM-COM-ORD-TRA         PIC 9(6)      COMP-6.
+            02 ITEM-COM-CUENTA          PIC 9(12)     COMP-6.
+            02 ITEM-COM-CARACT          PIC X.
+      *   S / N
+            02 ITEM-COM-PROY            PIC 9(2)      COMP-6.
+            02 ITEM-COM-OBS             PIC X(30).
+        01  ITEM-COM-REG-2.
+            02 ITEM-COM-RENGLON-1       PIC X(50).
+            02 ITEM-COM-RENGLON-2       PIC X(50).
+            02 ITEM-COM-RES-1           PIC X(70).

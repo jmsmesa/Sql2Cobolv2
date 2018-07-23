@@ -1,0 +1,9 @@
+        FD  ORDENOPITEM
+            LABEL RECORD IS STANDARD.
+        01  REG-ORDENOPITEM.
+            02 ORDENOPITEM-KEY.
+               03 ORDENOPITEM-ORDEN        PIC 9(06)      COMP-6.
+               03 ORDENOPITEM-PRODUCTO     PIC 9(06)      COMP-6.
+               03 ORDENOPITEM-TIPO         PIC 9(01).
+               03 ORDENOPITEM-SECUENCIA    PIC 9(04)      COMP-6.
+            02 ORDENOPITEM-CAMPO           PIC X(170).

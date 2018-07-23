@@ -1,0 +1,6 @@
+            SELECT ORDENOPITEM
+              ASSIGN TO RANDOM "F-ITEM-COM"
+              ORGANIZATION IS INDEXED
+              ACCESS MODE IS DYNAMIC
+              RECORD KEY IS ORDENOPITEM-KEY
+              FILE STATUS IS FS-COMUN.

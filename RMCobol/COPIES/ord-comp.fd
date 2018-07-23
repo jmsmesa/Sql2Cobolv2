@@ -1,0 +1,42 @@
+t     *   A01037
+        FD  ORD-COMP
+            LABEL RECORD IS STANDARD.
+        01  ORD-COMP-REG.
+            02 ORD-COMP-LLAVE.
+               03 ORD-COMP-ID           PIC 9(6).
+            02 ORD-COMP-PROVE           PIC 9(4).
+            02 ORD-COMP-FECHA           PIC 9(8).
+            02 ORD-COMP-PEND            PIC 9.
+      *  0 = Pendiente     1 = Cumplida su entrega    2 = Cumplida por compras
+            02 ORD-COMP-PAGO            PIC 9(2)      COMP-6.
+            02 ORD-COMP-DTO-1           PIC 99V99     COMP-6.
+            02 ORD-COMP-DTO-2           PIC 99V99     COMP-6.
+            02 ORD-COMP-DTO-3           PIC 99V99     COMP-6.
+            02 ORD-COMP-ANTIC           PIC X.
+      *  N / S 
+      * a partir de 11/13 se usa para anticipos de bienes de Uso
+            02 ORD-COMP-DEPO            PIC 9(4)      COMP-6.
+            02 ORD-COMP-OBS-1           PIC X(60).
+            02 ORD-COMP-OBS-2           PIC X(60).
+            02 ORD-COMP-OBS-3           PIC X(60).
+            02 ORD-COMP-TOTAL           PIC 9(10)V99  COMP-6.
+            02 ORD-COMP-IVA             PIC 9(10)V99  COMP-6.
+            02 ORD-COMP-OTROS           PIC 9(10)V99  COMP-6.
+            02 ORD-COMP-SI-IMPRE        PIC X.
+            02 ORD-COMP-EMPRESA         PIC 99        COMP-6.
+      * 1-Tuteur  2-Tuteur Organoterapicos 4-Teva & Tuteur 5-Tuteur Biologicos
+            02 ORD-COMP-MONEDA          PIC 99        COMP-6.
+            02 ORD-COMP-COTIZ           PIC 9(4)V9(4) COMP-6.
+            02 ORD-COMP-DOLAR           PIC 9(2)V9999 COMP-6.
+            02 ORD-COMP-AUTORIZA        PIC X.
+      * S/N (se usa cuando la recepcion supera el porc. de admision)
+            02 ORD-COMP-TABLA.
+               03 ORD-COMP-IT OCCURS 5.
+                  04 ORD-COMP-FEC-ENT   PIC 9(6)      COMP-6.
+            02 ORD-COMP-PCIA-IBB        PIC 99.
+            02 ORD-COMP-CONFIR          PIC X.
+      * S = cuando se confirma con el proveedor, no se modifica mas
+            02 ORD-COMP-TIPO            PIC 9.
+      * 1-m.p.  2-p.t.
+            02 ORD-COMP-PORC            PIC 999V99.
+            02 ORD-COMP-RESTO           PIC X(2).

@@ -1,0 +1,14 @@
+        FD  HONORA
+            LABEL RECORD IS STANDARD.
+        01  HONORA-REG.
+            02 HONORA-LLAVE.
+               03 HONORA-ID           PIC 9(6).
+            02 HONORA-APM             PIC 99.
+            02 HONORA-FECHA           PIC 9(6).
+            02 HONORA-AUTOR           PIC 9.
+      * 0=Sin autorizar 1-Autorizada
+            02 HONORA-IMPUE           PIC 9.
+      * 0=Sin autorizar 1-Autorizada 2-Rechazada
+            02 HONORA-NODONA          PIC 9.
+      * 0-Donacion ok 1-Donacion no computable
+            02 HONORA-RESTO           PIC X(37).

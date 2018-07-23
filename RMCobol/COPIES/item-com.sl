@@ -1,0 +1,6 @@
+            SELECT ITEM-COM
+              ASSIGN TO RANDOM "F-ITEM-COM"
+              ORGANIZATION IS INDEXED
+              ACCESS MODE IS DYNAMIC
+              RECORD KEY IS ITEM-COM-LLAVE
+              FILE STATUS IS FS-COMUN.

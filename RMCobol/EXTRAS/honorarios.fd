@@ -1,0 +1,11 @@
+        FD  HONORARIOS
+            LABEL RECORD IS STANDARD.
+        01  REG-HONORARIOS.
+            02 HONORARIOS-KEY.
+               03 HONORARIOS-ID           PIC 9(06).
+            02 HONORARIOS-APM             PIC 9(02).
+            02 HONORARIOS-FECHA           PIC 9(06).
+            02 HONORARIOS-AUTOR           PIC 9(01).
+            02 HONORARIOS-IMPUE           PIC 9(01).
+            02 HONORARIOS-NODONA          PIC 9(01).
+            02 HONORARIOS-RESTO           PIC X(37).
